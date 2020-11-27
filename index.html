@@ -55,7 +55,7 @@ function updateTOTP() {
 	$("#main").html(html);
 	var w = 256;
 	for(var i=0;i<specs.length;i++) {
-		var url = "otpauth://totp/"+specs[i]["label"]+"?secret="+specs[i]["secret"];
+		var url = "otpauth://totp/"+encodeURI(specs[i]["label"])+"?secret="+specs[i]["secret"];
 		$('#qr_'+i).qrcode({width: w, height: w, text: url});
 	}
 }
