@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOTP tool</title>
+<script type="text/javascript" src="jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="jquery.qrcode.min.js"></script>
+<script type="text/javascript" src="jsOTP.min.js"></script>
+<script type="text/javascript">
+var expirySec = 30;
+var digits = 6;
+function genHtmlForSpec(i, spec) {
+	var totp = new jsOTP.totp(expirySec, digits);
+	var otp = totp.getOtp(spec["secret"]);
+
+	var epoch = new Date().getTime() / 1000;
+	var count = parseInt(epoch / expirySec);
+	var restSec = (count+1) * expirySec - epoch;
+
+	var color = restSec < 5 ? "#ffcccc" : "black";
+	var s = "";
+	s += "<div class='entry' id='entry_"+i+"'>";
+	s += "<div class='label'>"+spec["label"]+"</div>";
+	s += "<div class='otp' style='color: "+color+";'>"+otp;
+	s += "<span class='qr' id='qr_"+i+"' />";
+	s += "</div>";
+	s += "<div class='rest'>Rest "+Math.round(restSec)+"[sec]</div>";
+	s += "</div>";
+	return s;
+}
+function fixSecret(s) {
+	while(s.length % 8) s+="A";
+	return s;
+}
+function getSpecs() {
+	var specsStr = $("#secrets").val();
+	var lines = specsStr.split("\n").map(e => e.trim()).filter(e => e.length);
+	if(lines.length % 2) {
+		console.log("lines.length should be even. got", lines.length);
+		return [];
+	}
+	var specs = []
+	for(var i=0;i<lines.length/2;i++) {
+		specs.push({"label": lines[i*2], "secret": fixSecret(lines[i*2+1])});
+	}
+	return specs;
+}
+function updateTOTP() {
+	var specs = getSpecs();
+	var html = "";
+	for(var i=0;i<specs.length;i++) {
+		html += genHtmlForSpec(i, specs[i]);
+	}
+	$("#main").html(html);
+	var w = 256;
+	for(var i=0;i<specs.length;i++) {
+		var url = "otpauth://totp/"+specs[i]["label"]+"?secret="+specs[i]["secret"];
+		$('#qr_'+i).qrcode({width: w, height: w, text: url});
+	}
+}
+$(function() {
+	updateTOTP();
+	setInterval(function() {
+		updateTOTP();
+	}, 1000);
+});
+</script>
+<style>
+.otp {
+	font-size: 3em;
+}
+.entry {
+	margin-bottom: 3em;
+}
+.qr {
+	margin-left: 2em;
+}
+</style>
+</head>
+<body>
+<div id="main"></div>
+<textarea id="secrets" cols=80 rows=20>
+Sample Secret 1
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Sample Secret 2
+bbbbbbbbbbbbb
+</textarea>
+</body>
+</html>
