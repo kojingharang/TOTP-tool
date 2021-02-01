@@ -18,11 +18,13 @@ function genHtmlForSpec(i, spec) {
 	var count = parseInt(epoch / expirySec);
 	var restSec = (count+1) * expirySec - epoch;
 
+	var copyCode = "navigator.clipboard.writeText('"+otp+"');";
+
 	var color = restSec < 5 ? "#ffcccc" : "black";
 	var s = "";
 	s += "<div class='entry' id='entry_"+i+"'>";
 	s += "<div class='label'>"+spec["label"]+"</div>";
-	s += "<div class='otp' style='color: "+color+";'>"+otp;
+	s += "<div class='otp' style='color: "+color+";' onclick="+copyCode+">"+otp;
 	s += "<span class='qr' id='qr_"+i+"' />";
 	s += "</div>";
 	s += "<div class='rest'>Rest "+Math.round(restSec)+"[sec]</div>";
