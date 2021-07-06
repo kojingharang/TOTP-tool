@@ -4,6 +4,4 @@ An HTML to show TOTPs and QR codes from secrets, to help migration of Google Aut
 
 # How to use
 
-Open index.html and just paste labels and secrets.
-
-See default value of textarea for labels and secrets.
+Open index.html and just paste totp url. See default value of textarea.

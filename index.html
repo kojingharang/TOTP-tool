@@ -38,13 +38,12 @@ function fixSecret(s) {
 function getSpecs() {
 	var specsStr = $("#secrets").val();
 	var lines = specsStr.split("\n").map(e => e.trim()).filter(e => e.length);
-	if(lines.length % 2) {
-		console.log("lines.length should be even. got", lines.length);
-		return [];
-	}
 	var specs = []
-	for(var i=0;i<lines.length/2;i++) {
-		specs.push({"label": lines[i*2], "secret": fixSecret(lines[i*2+1])});
+	for(var i=0;i<lines.length;i++) {
+		var m = lines[i].match(/^otpauth:\/\/totp\/(.*?)\?secret=(.*)$/)
+		if(m) {
+			specs.push({"label": m[1], "secret": fixSecret(m[2])});
+		}
 	}
 	return specs;
 }
@@ -83,10 +82,8 @@ $(function() {
 <body>
 <div id="main"></div>
 <textarea id="secrets" cols=80 rows=20>
-Sample Secret 1
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-Sample Secret 2
-bbbbbbbbbbbbb
+otpauth://totp/SampleSecret1?secret=aaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+otpauth://totp/SampleSecret2?secret=bbbbbbbbbbbbb
 </textarea>
 
 </body>
