@@ -1,7 +1,7 @@
 # TOTP tool
 
-An HTML to show TOTPs and QR codes from secrets, to help migration of Google Authenticator
+An HTML to show TOTP and QR codes from totp URLs, to help migration of Google Authenticator
 
 # How to use
 
-Open index.html and just paste totp url. See default value of textarea.
+Open index.html and just paste totp urls. See default value of textarea.
